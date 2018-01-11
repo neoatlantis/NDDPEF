@@ -9,7 +9,9 @@ nowdate = lambda: datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 def showFingerprint(f):
     return "%s %s<br />%s %s" % (f[0:8], f[8:16], f[16:24], f[24:32])
 
-def getPDF(e, filename=False, w=3, title=""):
+def getPDF(e, filename=False, w=3, title=None):
+    if not title: title = ""
+
     insertImage = lambda d, z="": '<img src="%s" %s/>' % (d, z)
 
     imgIndex = e.getIndex()
