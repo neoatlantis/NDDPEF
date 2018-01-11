@@ -9,7 +9,7 @@ nowdate = lambda: datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 def showFingerprint(f):
     return "%s %s<br />%s %s" % (f[0:8], f[8:16], f[16:24], f[24:32])
 
-def getPDF(e, filename=False, w=3):
+def getPDF(e, filename=False, w=3, title=""):
     insertImage = lambda d, z="": '<img src="%s" %s/>' % (d, z)
 
     imgIndex = e.getIndex()
@@ -30,7 +30,7 @@ def getPDF(e, filename=False, w=3):
             %s
         </td>
         <td class="lb" width="40%%" align="left" valign="top">
-            <span class="item">Title</span><br /><br /><p>
+            <span class="item">Title</span><br />%s<br /><p>
             <span class="item">Comment</span>
         </td>
         <td class="lb" align="right" valign="top">
@@ -44,6 +44,7 @@ def getPDF(e, filename=False, w=3):
     </table>
     """ % (
         insertImage(imgIndex, 'style="max-height: 10em"'),
+        title,
         total,
         fingerprint,
         nowdate()

@@ -4,8 +4,7 @@ import hashlib
 import base64
 import json
 
-from qrgen import getQRCodeInDataURI as qrencode
-from pdfgen import getPDF
+from .qrgen import getQRCodeInDataURI as qrencode
 
 sha256 = lambda i: base64.b64encode(hashlib.sha256(i).digest()).decode('ascii')[:8]
 fingerprint = lambda i: hashlib.sha256(i).hexdigest().upper()[:32]
@@ -29,9 +28,13 @@ class NddpefEncoder:
     resume into original data file.
     """
 
-    def __init__(self, data, filename=""):
+    def __init__(self, data, filename=None):
         assert type(data) == bytes
-        assert type(filename) == str and len(filename) < 128
+
+        if filename:
+            assert type(filename) == str and len(filename) < 128
+        else:
+            filename = ""
 
         # preprocessing data
 
@@ -75,16 +78,3 @@ class NddpefEncoder:
             ret.append(qrencode(data))
             
         return ret
-
-if __name__ == "__main__":
-
-    import os,sys
-
-    try:
-        ifn, ofn = sys.argv[1:3]
-    except:
-        print("Usage: python encoder.py <input-filename> <output-filename>")
-        sys.exit(1)
-
-    x = NddpefEncoder(open(ifn, 'rb').read())
-    getPDF(x, filename=ofn, w=W)
