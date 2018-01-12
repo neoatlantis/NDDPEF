@@ -69,6 +69,10 @@ def getPDF(e, filename=False, w=3, title=None):
                     font-family: 'Share Tech Mono', monospace;
                     font-size: 16pt;
                 }
+                #data{
+                    border-style: dotted none none none;
+                    border-width: 10px 0px 0px 0px;
+                }
                 #data img{
                     max-width: 100%%;
                     max-height: 100%%;

@@ -2,8 +2,8 @@
 
 from setuptools import setup, find_packages
 setup(
-    version="1.0.1",
-    install_requires=["pdfkit"],
+    version="1.0.2",
+    install_requires=["pdfkit", "scipy"],
 
 
     name="NDDPEF",
