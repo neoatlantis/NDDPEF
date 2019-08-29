@@ -4,8 +4,7 @@ import argparse
 import sys
 import os
 
-from .pdfgen import getPDF
-from .encoder import NddpefEncoder
+from .encoder import NDDPEFEncoder
 
 
 
@@ -67,15 +66,8 @@ if args.action == "encode": # Encode
     else:
         OUTPUT = INPUT + ".nddpef.pdf"
 
-    getPDF(
-        NddpefEncoder(
-            open(INPUT, 'rb').read(),
-            filename=os.path.basename(INPUT)
-        ),
-        filename=OUTPUT,
-        w=args.size,
-        title=args.title
-    )
+    encoder = NDDPEFEncoder()
+    encoder.read(INPUT).finish().savePDF(OUTPUT)
 
     print("Output written to: %s" % OUTPUT)
 
