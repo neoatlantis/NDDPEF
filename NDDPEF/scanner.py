@@ -9,11 +9,12 @@ import subprocess
 
 NW = 420
 NH = 594
-BASELINE_ZONE = (0.15, 0.33)
+BASELINE_ZONE = (0, 0.1)
 OMIT_THIN_DISTANCE = 10 # 5mm
 
-def normalizedSequence(lst):
+def normalizeWave(lst):
     maxV, minV = max(lst), min(lst)
+    if maxV == minV: return [1 for i in range(0, len(lst))]
     return [(i - minV) / (maxV - minV) for i in lst]
 
 def diffRiseDropFilter(lst, riseThreshold=0.2, dropThreshold=-0.2):
@@ -34,40 +35,53 @@ def diffRiseDropFilter(lst, riseThreshold=0.2, dropThreshold=-0.2):
     return [int((a+b)/2) for a,b in ret]
 
 
-def schmittRiseDropFilter(lst, riseThreshold=0.2, dropThreshold=0.2):
-    s, e = -1, -1
+def schmittTriggerFilter(lst, riseThreshold=0.2, dropThreshold=0.6):
+    status = 0
     ret = []
-    for i in range(0, len(lst)):
-        v = lst[i]
-        if s < 0:
-            if v >= riseThreshold:
-                s = i
-        else:
-            if v <= dropThreshold:
-                e = i
-                ret.append((s, e))
-                s, e = -1, -1
-    return [int((a+b)/2) for a,b in ret]
+    for v in lst:
+        if status == 0 and v > riseThreshold:
+            status = 1
+        elif status == 1 and v < dropThreshold:
+            status = 0
+        ret.append(status)
+    return ret
+
 
 def findBaseline(image):
     global NH, NW, BASELINE_ZONE
 
-    h1, h2 = int(NH * BASELINE_ZONE[0]), int(NH * BASELINE_ZONE[1])
-    zone = image.crop((0, h1, NW, h2))
+    w1, w2 = int(NW * BASELINE_ZONE[0]), int(NW * BASELINE_ZONE[1])
+    zone = image.crop((w1, 0, w2, NH))
     zoneW, zoneH = zone.size
     data = list(zone.getdata())
 
     ffts = []
 
-    for h in range(0, zoneH):
-        lineData = data[h*zoneW:][:zoneW]
-        fftRet = rfft(lineData, n=20)
+    for w in range(0, zoneW):
+        start = None
+        end = None
+        wavedata = [data[h*zoneW+w] for h in range(0, zoneH)]
+        wavedata = schmittTriggerFilter(normalizeWave(wavedata))
+
+        fftRet = rfft(wavedata, n=zoneH)
+        for each in fftRet:
+            print(each)
         ffts.append(fftRet)
-    
+        exit()
+
+    exit()
+
     finder = normalizedSequence([max(i[10:]) for i in ffts])
+    print([max(i[10:]) for i in ffts])
+    exit()
+
+
     lines = diffRiseDropFilter(finder, riseThreshold=0.2, dropThreshold=-0.2)
 
-    return int(lines[0] + h1)
+    print(finder)
+    exit()
+
+    return int(lines[0] + w1)
 
 def _filterBinaryImageAndGetLines(img, constrastThreshold, filterFunc):
     data = list(img.getdata())

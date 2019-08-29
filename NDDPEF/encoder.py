@@ -24,8 +24,8 @@ class NDDPEFEncoder:
     W = 210
     H = 297
     MARGIN = 15
-    COL = 4
-    ROW = 5
+    COL = 6
+    ROW = 7
     DATA_Y_OFFSET = 40 # mm
 
     def __init__(self):
@@ -96,10 +96,12 @@ class NDDPEFEncoder:
 
     def _addSyncLine(self):
         g = Element("g")
-        g.set("transform", "translate(5 %s)" % (self.MARGIN + self.DATA_Y_OFFSET))
+        h = 2
+        g.set("transform", "translate(5 %s)" % (self.MARGIN + self.DATA_Y_OFFSET-2*h))
         self.svg.append(g)
-        h = (self.H - 2 * self.MARGIN - self.DATA_Y_OFFSET) / (16 * self.ROW)
-        for i in range(0, 16 * self.ROW, 2):
+        count = math.ceil(self.CODE_SIZE * self.ROW / h) + 4
+        #(self.H - 2 * self.MARGIN - self.DATA_Y_OFFSET) / (16 * self.ROW)
+        for i in range(0, count, 2):
             SubElement(
                 g, "rect", x="0", y=str(i*h),
                 width="10", height=str(h), fill="black")

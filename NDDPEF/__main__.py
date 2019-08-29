@@ -67,7 +67,7 @@ if args.action == "encode": # Encode
         OUTPUT = INPUT + ".nddpef.pdf"
 
     encoder = NDDPEFEncoder()
-    encoder.read(INPUT).finish().savePDF(OUTPUT)
+    encoder.read(INPUT, eccLevel="L").finish().savePDF(OUTPUT)
 
     print("Output written to: %s" % OUTPUT)
 
